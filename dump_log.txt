@@ -1,0 +1,7 @@
+______________________________All data in filepath: ------------------------------
+{'Scarlet.jpeg': (27, 26, 32), 'Scarlet (1).jpeg': (27, 26, 32), 'Scarlet (2).jpeg': (27, 26, 32), 'DLAshley.jpg': (33, 32, 28), 'DLAshley (1).jpg': (33, 32, 28), 'DLAshley (2).jpg': (33, 32, 28)}
+------------------------------Possible duplicates found:------------------------------
+
+{'Scarlet (1).jpeg': (27, 26, 32), 'Scarlet (2).jpeg': (27, 26, 32), 'DLAshley (1).jpg': (33, 32, 28), 'DLAshley (2).jpg': (33, 32, 28)}
+Finale Duplicate Dict
+{(27, 26, 32): ['Scarlet.jpeg', 'Scarlet (1).jpeg', 'Scarlet (2).jpeg'], (33, 32, 28): ['DLAshley.jpg', 'DLAshley (1).jpg', 'DLAshley (2).jpg']}

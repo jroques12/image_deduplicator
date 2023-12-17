@@ -7,25 +7,33 @@ def print_list(list_obj: list, seperator: str):
         print(item, sep=seperator)
 
 
-dl = open("dump_log.txt", 'a')
-path = r"F:\Jorge's Iphone Photos\iCloud Photos\iCloud Photos\Test Folder"
+# opening dump log
+dl = open("dump_log.txt", 'w')
+# designating file path preference for windows and linux. Note: need to change direction of slash in further code
+win_path = r"F:\Jorge's Iphone Photos\iCloud Photos\iCloud Photos\Test Folder"
+lin_path = r"/home/scrant/"
 # creating a list of files from the given path
-image_list = os.listdir(path)
+image_list = os.listdir(lin_path)
 # a dict of all the jpeg files as keys with the first pixel's info (cast as tuple) as the value
 item_data = {}
 # creating a set to add all the first pixel info to check for doubles.
 dup_set_identifier = set()
 # a dictionary to store the list of possible duplicate file names as keys with the pixel tuple info as the value
 duplicate_dict_list = {}
+# a set to hold the touples that are duplicates
+duplicate_set_list = set()
+# the final dictionary of duplicates
+final_duplicates_dict = {}
 
+# iterating over the list of image files in the given path.
 for count, image in enumerate(image_list):
 
-    if image.endswith(".JPEG"):
+    if image.endswith(".jpeg") or image.endswith(".jpg"):
 
         # getting the length of the set before trying to add for comparison after
         len_before_add = len(dup_set_identifier)
         # grabbing the image filepath
-        next_item = Image.open(path + "\\" + image)
+        next_item = Image.open(lin_path + "/" + image)
         # creating key value pair using image name and the tuple of the very first pixel of data.
         item_data[image] = tuple(next_item.getdata()[0])
         # attempt to add the tuple to the set.
@@ -36,15 +44,30 @@ for count, image in enumerate(image_list):
         # doing the actual comparison of set length before and after add
         # attempt to determine if the current item is a duplicate
 
-        if len_after_add == len_after_add:
+        if len_before_add == len_after_add:
             # add the key value pair to a dictionary
             duplicate_dict_list[image] = item_data[image]
+            # add the tuple to a set to account for the pixels with duplicates
+            duplicate_set_list.add(item_data[image])
+
+        # iterating over the duplicate set list and building the final duplicate list including the originals
+        for set_item in duplicate_set_list:
+            final_duplicates_dict[set_item] = []
+            for key, value in item_data.items():
+                if value == set_item:
+                    final_duplicates_dict[set_item].append(key)
+
+
+
+        # need to take the values from duplicate_dict_list to get the originals
 
         print(f"Loaded {count+1} of {len(image_list)} items")
 
-
+print("_" * 30 + "All data in filepath: " + "-" * 30, file=dl)
 print(item_data, file=dl)
-print("-" * 30 + 'Possible duplicates found: \n', file=dl)
+print("-" * 30 + 'Possible duplicates found:' + "-" * 30 + '\n', file=dl)
 print(duplicate_dict_list, file=dl)
+print("Finale Duplicate Dict", file=dl)
+print(final_duplicates_dict, file=dl)
 
 dl.close()
