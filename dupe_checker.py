@@ -1,5 +1,6 @@
 from PIL import Image
 import os
+import directory_manip
 
 
 def print_list(list_obj: list, seperator: str):
@@ -63,6 +64,12 @@ for count, image in enumerate(image_list):
 
         print(f"Loaded {count+1} of {len(image_list)} items")
 
+
+for key in final_duplicates_dict.keys():
+    if len(final_duplicates_dict[key]) > 1:
+        for file in final_duplicates_dict[key]:
+            directory_manip.move_to_path(lin_path + file, lin_path + 'temp/')
+
 print("_" * 30 + "All data in filepath: " + "-" * 30, file=dl)
 print(item_data, file=dl)
 print("-" * 30 + 'Possible duplicates found:' + "-" * 30 + '\n', file=dl)
@@ -71,3 +78,7 @@ print("Finale Duplicate Dict", file=dl)
 print(final_duplicates_dict, file=dl)
 
 dl.close()
+
+"""
+
+"""
