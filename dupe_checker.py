@@ -1,6 +1,5 @@
 from PIL import Image
-import os
-import directory_manip
+from directory_manip import *
 
 
 def print_list(list_obj: list, seperator: str):
@@ -14,7 +13,8 @@ dl = open("dump_log.txt", 'w')
 win_path = r"F:\Jorge's Iphone Photos\iCloud Photos\iCloud Photos\Test Folder"
 lin_path = r"/home/scrant/"
 # creating a list of files from the given path
-image_list = os.listdir(lin_path)
+image_list = os.listdir(PATH)
+print(image_list)
 # a dict of all the jpeg files as keys with the first pixel's info (cast as tuple) as the value
 item_data = {}
 # creating a set to add all the first pixel info to check for doubles.
@@ -29,13 +29,18 @@ final_duplicates_dict = {}
 # iterating over the list of image files in the given path.
 for count, image in enumerate(image_list):
 
-    if image.endswith(".jpeg") or image.endswith(".jpg"):
+    if image.endswith(".JPEG") or image.endswith(".jpg"):
 
         # getting the length of the set before trying to add for comparison after
         len_before_add = len(dup_set_identifier)
         # grabbing the image filepath
-        next_item = Image.open(lin_path + "/" + image)
-        # creating key value pair using image name and the tuple of the very first pixel of data.
+        next_item = Image.open(PATH + image)
+        print(PATH+image)
+        # creating key value pair using image name(values) and the tuple of the very first pixel of data (keys).
+        # This will cause
+        # certain images to mistakenly be grouped as duplicates due to having the exact same first pixel despite being
+        # different images. This was intended as loading even just a handful of images simultaneously will cause a RAM
+        # related crash. Once the "short list" is generated, will filter additionally to exclude these edge cases.
         item_data[image] = tuple(next_item.getdata()[0])
         # attempt to add the tuple to the set.
         dup_set_identifier.add(item_data[image])
@@ -58,18 +63,18 @@ for count, image in enumerate(image_list):
                 if value == set_item:
                     final_duplicates_dict[set_item].append(key)
 
-
-
         # need to take the values from duplicate_dict_list to get the originals
 
         print(f"Loaded {count+1} of {len(image_list)} items")
 
-
+# iterating over the keys which are first pixel info as a tuple to determine if more than 1 image is assocaited with it
+# and moving those images to a temporary folder for comparison and further filtering.
 for key in final_duplicates_dict.keys():
     if len(final_duplicates_dict[key]) > 1:
         for file in final_duplicates_dict[key]:
-            directory_manip.move_to_path(lin_path + file, lin_path + 'temp/')
+            move_to_path(PATH + file, PATH + 'temp')
 
+# outputting all the relevant data to a txt file with some decoration
 print("_" * 30 + "All data in filepath: " + "-" * 30, file=dl)
 print(item_data, file=dl)
 print("-" * 30 + 'Possible duplicates found:' + "-" * 30 + '\n', file=dl)
@@ -80,5 +85,6 @@ print(final_duplicates_dict, file=dl)
 dl.close()
 
 """
-
+Was able to successfully implement a dynamic path variable in directory_manip to account for OS differences for linux
+and windows.
 """

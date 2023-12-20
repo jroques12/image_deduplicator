@@ -1,7 +1,13 @@
-import os, shutil
+import os
+import shutil
+import sys
 
-win_path = r""
-LIN_PATH = r"/home/scrant/"
+# crea
+PATH = ''
+if sys.platform == "win32":
+    PATH = "F:\\Ashley's Iphone Photos\\"
+elif sys.platform == "linux":
+    PATH = r"/home/scrant/"
 
 
 def move_to_path(filename, destination):
@@ -9,3 +15,6 @@ def move_to_path(filename, destination):
         os.mkdir(destination)
 
     shutil.move(filename, destination)
+
+
+print(sys.platform)
