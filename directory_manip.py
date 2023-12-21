@@ -12,7 +12,7 @@ elif sys.platform == "linux":
 
 
 # essentially moves the file to the destination, if destination does not exist, it will create the directory and store the file
-def move_to_path(filename, destination) -> None:
+def move_to_path(filename: str, destination: str, batch_number=0) -> None:
     if not os.path.exists(destination):
         os.mkdir(destination)
 

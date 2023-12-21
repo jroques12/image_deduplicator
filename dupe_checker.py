@@ -1,5 +1,4 @@
-from PIL import Image
-from directory_manip import *
+from dupe_comparison import *
 
 
 def print_list(list_obj: list, seperator: str):
@@ -35,13 +34,12 @@ for count, image in enumerate(image_list):
         len_before_add = len(dup_set_identifier)
         # grabbing the image filepath
         next_item = Image.open(PATH + image)
-        print(PATH+image)
-        # creating key value pair using image name(values) and the tuple of the very first pixel of data (keys).
-        # This will cause
-        # certain images to mistakenly be grouped as duplicates due to having the exact same first pixel despite being
-        # different images. This was intended as loading even just a handful of images simultaneously will cause a RAM
-        # related crash. Once the "short list" is generated, will filter additionally to exclude these edge cases.
-        item_data[image] = tuple(next_item.getdata())[0:100]
+
+        """creating key value pair using image name(values) and the tuple of the very first pixel of data (keys).This 
+        will cause similar images to mistakenly be grouped as duplicates due to having the exact same first pixel despite 
+        being different images. This was intended as loading even just a handful of images simultaneously will cause a RAM 
+        related crash. Once the "short list" is generated, will filter additionally to exclude these edge cases."""
+        item_data[image] = tuple(next_item.getdata())[0]
         # attempt to add the tuple to the set.
         dup_set_identifier.add(item_data[image])
         # checking the length of the set after add attempt.
@@ -69,6 +67,15 @@ for count, image in enumerate(image_list):
 
 # iterating over the keys which are first pixel info as a tuple to determine if more than 1 image is assocaited with it
 # and moving those images to a temporary folder for comparison and further filtering.
+final_final_dupes_list = {key: value for key, value in final_duplicates_dict.items()
+                          if len(final_duplicates_dict[key]) > 1}
+
+""" Running the deep checker to output the names of possible duplicates. Files that are not named in the output 
+either as the base case or the possible duplicate but were moved to temp folder are likely not actual duplicates
+and likely were added due to having the same first pixel as the other duplicates."""
+img_compare(final_final_dupes_list)
+
+# Moving files flagged as duplicates (including false positives) to the temp folder.
 for key in final_duplicates_dict.keys():
     if len(final_duplicates_dict[key]) > 1:
         for file in final_duplicates_dict[key]:
@@ -85,6 +92,12 @@ print(final_duplicates_dict, file=dl)
 dl.close()
 
 """
-Was able to successfully implement a dynamic path variable in directory_manip to account for OS differences for linux
-and windows.
+Purpose of this program is to identify and isolate all photos that are potiential duplicates of each other.
+There is a rate of false positives in a batch of images that are similar due to the initial filtering method
+catching images with the exact same first pixel. The secondary filtering only identifies duplicates via the terminal.
+The secondary filtering is done by comparing every 10th pixel up to 1000 for a deeper comparison.
+Final deletion of duplicates is up to the end user but this program provides a temp folder in the directory of the
+image batch to transfer all possible duplicates for easier comparison. Possible applications include de-duplicating
+photo backups and identifying images that are taken in rapid succession and therefore have a similar enough pixel profile
+to be flagged.
 """
