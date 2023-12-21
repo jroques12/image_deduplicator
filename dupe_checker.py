@@ -29,7 +29,7 @@ final_duplicates_dict = {}
 # iterating over the list of image files in the given path.
 for count, image in enumerate(image_list):
 
-    if image.endswith(".JPEG") or image.endswith(".jpg"):
+    if image.endswith(".jpeg") or image.endswith(".jpg"):
 
         # getting the length of the set before trying to add for comparison after
         len_before_add = len(dup_set_identifier)
@@ -41,7 +41,7 @@ for count, image in enumerate(image_list):
         # certain images to mistakenly be grouped as duplicates due to having the exact same first pixel despite being
         # different images. This was intended as loading even just a handful of images simultaneously will cause a RAM
         # related crash. Once the "short list" is generated, will filter additionally to exclude these edge cases.
-        item_data[image] = tuple(next_item.getdata()[0])
+        item_data[image] = tuple(next_item.getdata())[0:100]
         # attempt to add the tuple to the set.
         dup_set_identifier.add(item_data[image])
         # checking the length of the set after add attempt.
